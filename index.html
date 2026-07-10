@@ -4,7 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Aprendizaje por Refuerzo · Q‑Learning</title>
-  <!-- Enlace al CSS externo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -44,7 +46,7 @@
         y cualquier dominio que requiera adaptación en tiempo real a entornos cambiantes.</p>
       </div>
 
-      <!-- DIAGRAMA EN PNG (sin pie de foto) -->
+      <!-- DIAGRAMA EN PNG -->
       <div class="diagram-box">
         <img src="images/diagrama_agente_entorno.png" alt="Diagrama de interacción agente-entorno en RL" />
       </div>
@@ -52,32 +54,32 @@
       <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
     </section>
 
-    <!-- ==================== SLIDE 2: CONCEPTOS ==================== -->
+    <!-- ==================== SLIDE 2: CONCEPTOS (con tarjetas) ==================== -->
     <section class="slide" data-index="1">
       <h2>2. Conceptos fundamentales</h2>
       <p>El RL se estructura en torno a los siguientes elementos clave, según la definición del informe:</p>
       <div class="grid-2">
-        <div>
+        <div class="concept-card">
           <h3>Agente</h3>
           <p>Es la entidad que aprende y toma decisiones. Su límite está definido por su capacidad de control directo; todo sistema que el agente no pueda modificar arbitrariamente se considera externo a él.</p>
         </div>
-        <div>
+        <div class="concept-card">
           <h3>Entorno</h3>
           <p>Representa todo aquello externo al control del agente. Es el sistema que reacciona a las acciones ejecutadas, devolviendo nuevas situaciones (estados) y señales de evaluación (recompensas).</p>
         </div>
-        <div>
+        <div class="concept-card">
           <h3>Estado (S)</h3>
           <p>Es la representación de la situación actual del entorno en un instante discreto <em>t</em>, denotado como S<sub>t</sub> ∈ S. Puede ir desde lecturas sensoriales básicas hasta descripciones abstractas complejas.</p>
         </div>
-        <div>
+        <div class="concept-card">
           <h3>Acción (A)</h3>
           <p>Es la decisión ejecutada por el agente, A<sub>t</sub> ∈ A(s), en respuesta al estado actual. El conjunto de acciones disponibles puede depender del estado.</p>
         </div>
-        <div>
+        <div class="concept-card">
           <h3>Recompensa (R)</h3>
           <p>Señal numérica (R<sub>t</sub> ∈ R) enviada por el entorno que evalúa el éxito de una acción. Define la meta del problema: el objetivo único del agente es maximizar su acumulación a largo plazo. Informa <em>qué</em> se debe lograr, no <em>cómo</em>.</p>
         </div>
-        <div>
+        <div class="concept-card">
           <h3>Política (π)</h3>
           <p>Es la estrategia que dicta el comportamiento del agente. Formalmente, π(a|s) denota la probabilidad de seleccionar la acción A<sub>t</sub> = a dado que el entorno se encuentra en el estado S<sub>t</sub> = s.</p>
         </div>
@@ -387,8 +389,7 @@
 <!-- INDICADORES INFERIORES -->
 <div class="page-indicator" id="pageIndicator"></div>
 
-<!-- Enlace al JavaScript externo -->
+<!-- ========================================================== -->
 <script src="script.js"></script>
-
 </body>
 </html>

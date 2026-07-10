@@ -132,6 +132,27 @@ html, body {
   .header a { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
 }
 
+/* ---------- TARJETAS PARA CONCEPTOS (diapositiva 2) ---------- */
+.concept-card {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 1rem;
+  padding: 1rem 1.2rem;
+  transition: border-color 0.2s;
+}
+.concept-card:hover {
+  border-color: #214E34;
+}
+.concept-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+  color: #7DC89A;
+}
+.concept-card p {
+  margin-bottom: 0;
+  font-size: 0.95rem;
+}
+
 /* ---------- TABLA Q (fraudes) ---------- */
 .q-table-wrapper {
   overflow-x: auto;
