@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: rl-web
+    ports:
+      - "3004:80"   # Se expone el puerto 80 (Nginx por defecto)
+    restart: unless-stopped
