@@ -7,389 +7,238 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/simulation.css" />
+   <link rel="stylesheet" href="styles/navigation.css" />
 </head>
 <body>
+  <header class="header" id="mainHeader">
+    <a href="#" data-slide="0" class="active">1. Intro</a>
+    <a href="#" data-slide="1">2. Conceptos</a>
+    <a href="#" data-slide="2">3. Aprendizaje</a>
+    <a href="#" data-slide="3">4. Q‑Learning</a>
+    <a href="#" data-slide="4">5. Fraudes</a>
+    <a href="#" data-slide="5">6. Simulación</a>
+    <a href="#" data-slide="6">7. Conclusiones</a>
+    <span class="slide-indicator" id="slideIndicator">1 / 7</span>
+  </header>
 
-<!-- HEADER FIJO -->
-<header class="header" id="mainHeader">
-  <a href="#" data-slide="0" class="active">1. Intro</a>
-  <a href="#" data-slide="1">2. Conceptos</a>
-  <a href="#" data-slide="2">3. Aprendizaje</a>
-  <a href="#" data-slide="3">4. Q‑Learning</a>
-  <a href="#" data-slide="4">5. Fraudes</a>
-  <a href="#" data-slide="5">6. Simulación</a>
-  <a href="#" data-slide="6">7. Conclusiones</a>
-  <span class="slide-indicator" id="slideIndicator">1 / 7</span>
-</header>
-
-<!-- CONTENEDOR DE DIAPOSITIVAS -->
-<div class="slides-wrapper">
-  <div class="slides-container" id="slidesContainer">
-
-    <!-- ==================== SLIDE 1: INTRODUCCIÓN ==================== -->
-    <section class="slide" data-index="0">
-      <h2>1. Introducción al Aprendizaje por Refuerzo</h2>
-      <p>
-        Dentro del <em>machine learning</em> existen tres grandes categorías: supervisado, no supervisado y por refuerzo. 
-        El supervisado usa datos etiquetados; el no supervisado busca patrones sin etiquetas. 
-        El <strong>Aprendizaje por Refuerzo</strong> (RL) se basa en el principio de <strong>prueba y error</strong>, 
-        similar a cómo aprenden los humanos.
-      </p>
-      <p>
-        Su objetivo no es clasificar o agrupar, sino <strong>maximizar una señal de recompensa numérica</strong> 
-        a lo largo del tiempo. El agente interactúa con un entorno, toma decisiones y recibe retroalimentación 
-        (recompensas o penalizaciones) que le permiten mejorar su estrategia.
-      </p>
-      <div class="card">
-        <p><strong>Relevancia actual:</strong> El RL es clave en sistemas autónomos, robótica, juegos, finanzas 
-        y cualquier dominio que requiera adaptación en tiempo real a entornos cambiantes.</p>
-      </div>
-
-      <!-- DIAGRAMA EN PNG -->
-      <div class="diagram-box">
-        <img src="images/diagrama_agente_entorno.png" alt="Diagrama de interacción agente-entorno en RL" />
-      </div>
-
-      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
-    </section>
-
-    <!-- ==================== SLIDE 2: CONCEPTOS (con tarjetas) ==================== -->
-    <section class="slide" data-index="1">
-      <h2>2. Conceptos fundamentales</h2>
-      <p>El RL se estructura en torno a los siguientes elementos clave, según la definición del informe:</p>
-      <div class="grid-2">
-        <div class="concept-card">
-          <h3>Agente</h3>
-          <p>Es la entidad que aprende y toma decisiones. Su límite está definido por su capacidad de control directo; todo sistema que el agente no pueda modificar arbitrariamente se considera externo a él.</p>
+  <div class="slides-wrapper">
+    <div class="slides-container" id="slidesContainer">
+      <section class="slide" data-index="0">
+        <h2>1. Introducción al Aprendizaje por Refuerzo</h2>
+        <p>Dentro del <em>machine learning</em> existen tres grandes categorías: supervisado, no supervisado y por refuerzo. El supervisado usa datos etiquetados; el no supervisado busca patrones sin etiquetas. El <strong>Aprendizaje por Refuerzo</strong> (RL) se basa en el principio de <strong>prueba y error</strong>, similar a cómo aprenden los humanos.</p>
+        <p>Su objetivo no es clasificar o agrupar, sino <strong>maximizar una señal de recompensa numérica</strong> a lo largo del tiempo. El agente interactúa con un entorno, toma decisiones y recibe retroalimentación (recompensas o penalizaciones) que le permiten mejorar su estrategia.</p>
+        <div class="card">
+          <p><strong>Relevancia actual:</strong> El RL es clave en sistemas autónomos, robótica, juegos, finanzas y cualquier dominio que requiera adaptación en tiempo real a entornos cambiantes.</p>
         </div>
-        <div class="concept-card">
-          <h3>Entorno</h3>
-          <p>Representa todo aquello externo al control del agente. Es el sistema que reacciona a las acciones ejecutadas, devolviendo nuevas situaciones (estados) y señales de evaluación (recompensas).</p>
+        <div class="diagram-box">
+          <img src="images/diagrama_agente_entorno.png" alt="Diagrama de interacción agente-entorno en RL" />
         </div>
-        <div class="concept-card">
-          <h3>Estado (S)</h3>
-          <p>Es la representación de la situación actual del entorno en un instante discreto <em>t</em>, denotado como S<sub>t</sub> ∈ S. Puede ir desde lecturas sensoriales básicas hasta descripciones abstractas complejas.</p>
-        </div>
-        <div class="concept-card">
-          <h3>Acción (A)</h3>
-          <p>Es la decisión ejecutada por el agente, A<sub>t</sub> ∈ A(s), en respuesta al estado actual. El conjunto de acciones disponibles puede depender del estado.</p>
-        </div>
-        <div class="concept-card">
-          <h3>Recompensa (R)</h3>
-          <p>Señal numérica (R<sub>t</sub> ∈ R) enviada por el entorno que evalúa el éxito de una acción. Define la meta del problema: el objetivo único del agente es maximizar su acumulación a largo plazo. Informa <em>qué</em> se debe lograr, no <em>cómo</em>.</p>
-        </div>
-        <div class="concept-card">
-          <h3>Política (π)</h3>
-          <p>Es la estrategia que dicta el comportamiento del agente. Formalmente, π(a|s) denota la probabilidad de seleccionar la acción A<sub>t</sub> = a dado que el entorno se encuentra en el estado S<sub>t</sub> = s.</p>
-        </div>
-      </div>
-      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
-    </section>
+        <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+      </section>
 
-    <!-- ==================== SLIDE 3: PROCESO DE APRENDIZAJE ==================== -->
-    <section class="slide" data-index="2">
-      <h2>3. Proceso de aprendizaje mediante recompensas</h2>
-      <p>
-        El proceso de aprendizaje se basa en la interacción continua entre el agente y su entorno. 
-        En cada instante <em>t</em>, el agente observa su estado actual (S<sub>t</sub>) y ejecuta 
-        una acción (A<sub>t</sub>). Como respuesta, el entorno transita a un nuevo estado 
-        (S<sub>t+1</sub>) y emite una recompensa o penalización (R<sub>t+1</sub>). 
-        Al carecer de instrucciones explícitas sobre qué acciones son correctas, el agente 
-        aprende mediante <strong>ensayo y error</strong>, ajustando su comportamiento para 
-        favorecer las decisiones que resultan rentables a largo plazo.
-      </p>
-      <p>
-        Este proceso iterativo permite al agente construir gradualmente una <strong>política</strong> 
-        que maximiza la señal de recompensa. La clave está en que el agente no solo considera 
-        el beneficio inmediato, sino que también evalúa las consecuencias futuras de sus acciones, 
-        lo que le permite planificar y adaptarse a entornos dinámicos.
-      </p>
-      <div class="card">
-        <h3>Dilema entre exploración y explotación</h3>
-        <p>
-          Para optimizar el aprendizaje, el sistema debe resolver un equilibrio fundamental:
-        </p>
-        <ul>
-          <li><strong>Explotación:</strong> utilizar decisiones conocidas y efectivas para asegurar un buen rendimiento inmediato. El agente elige la acción que, según su conocimiento actual, proporciona la mayor recompensa esperada.</li>
-          <li><strong>Exploración:</strong> probar alternativas desconocidas en la búsqueda de recompensas aún mayores, incluso si esto implica sacrificar rendimiento a corto plazo. La exploración es esencial para descubrir nuevas estrategias que pueden ser más beneficiosas a largo plazo.</li>
-        </ul>
-        <p>
-          Este equilibrio se gestiona habitualmente con la estrategia <span class="highlight">ε‑greedy</span>, 
-          donde el agente explora al azar con una probabilidad ε y explota su conocimiento con probabilidad 1−ε. 
-          Conforme el agente va adquiriendo experiencia, la tasa de exploración ε se reduce gradualmente, 
-          permitiendo que el agente se centre en explotar el conocimiento ya adquirido.
-        </p>
-      </div>
-      <p>
-        El objetivo final del agente no es maximizar la recompensa inmediata, sino el 
-        <strong>retorno acumulado descontado</strong> a lo largo del tiempo, definido como:
-      </p>
-      <div class="eq-box">G<sub>t</sub> = ∑<sub>k=0</sub><sup>∞</sup> γ<sup>k</sup> R<sub>t+k+1</sub></div>
-      <p>
-        Donde el <span class="highlight">factor de descuento γ</span> (0 ≤ γ < 1) es un parámetro 
-        clave que define la “visión futura” del sistema. Un valor de γ cercano a 1 otorga un peso 
-        casi igual a las recompensas futuras, lo que permite al agente planificar a largo plazo 
-        y tomar decisiones que maximicen el beneficio total. Por el contrario, un γ cercano a 0 
-        hace que el agente sea <strong>cortoplacista</strong>, enfocándose únicamente en la 
-        recompensa inmediata (R<sub>t+1</sub>) y descartando prácticamente las consecuencias 
-        futuras de sus acciones.
-      </p>
-      <p>
-        La elección de γ depende del problema: en tareas donde el agente necesita actuar con 
-        previsión (por ejemplo, gestión de inventarios o planificación financiera), se prefiere 
-        un γ alto. En problemas donde las acciones tienen efectos inmediatos y el entorno cambia 
-        rápidamente, un γ bajo puede ser más adecuado para evitar planes excesivamente largos 
-        que se vuelvan obsoletos.
-      </p>
-      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
-    </section>
+      <section class="slide" data-index="1">
+        <h2>2. Conceptos fundamentales</h2>
+        <p>El RL se estructura en torno a los siguientes elementos clave, según la definición del informe:</p>
+        <div class="grid-2">
+          <div class="concept-card">
+            <h3>Agente</h3>
+            <p>Es la entidad que aprende y toma decisiones. Su límite está definido por su capacidad de control directo; todo sistema que el agente no pueda modificar arbitrariamente se considera externo a él.</p>
+          </div>
+          <div class="concept-card">
+            <h3>Entorno</h3>
+            <p>Representa todo aquello externo al control del agente. Es el sistema que reacciona a las acciones ejecutadas, devolviendo nuevas situaciones (estados) y señales de evaluación (recompensas).</p>
+          </div>
+          <div class="concept-card">
+            <h3>Estado (S)</h3>
+            <p>Es la representación de la situación actual del entorno en un instante discreto <em>t</em>, denotado como S<sub>t</sub> ∈ S. Puede ir desde lecturas sensoriales básicas hasta descripciones abstractas complejas.</p>
+          </div>
+          <div class="concept-card">
+            <h3>Acción (A)</h3>
+            <p>Es la decisión ejecutada por el agente, A<sub>t</sub> ∈ A(s), en respuesta al estado actual. El conjunto de acciones disponibles puede depender del estado.</p>
+          </div>
+          <div class="concept-card">
+            <h3>Recompensa (R)</h3>
+            <p>Señal numérica (R<sub>t</sub> ∈ R) enviada por el entorno que evalúa el éxito de una acción. Define la meta del problema: el objetivo único del agente es maximizar su acumulación a largo plazo. Informa <em>qué</em> se debe lograr, no <em>cómo</em>.</p>
+          </div>
+          <div class="concept-card">
+            <h3>Política (π)</h3>
+            <p>Es la estrategia que dicta el comportamiento del agente. Formalmente, π(a|s) denota la probabilidad de seleccionar la acción A<sub>t</sub> = a dado que el entorno se encuentra en el estado S<sub>t</sub> = s.</p>
+          </div>
+        </div>
+        <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+      </section>
 
-    <!-- ==================== SLIDE 4: Q-LEARNING ==================== -->
-    <section class="slide" data-index="3">
-      <h2>4. Algoritmo Q‑Learning</h2>
-      <p>
-        El algoritmo <strong>Q‑Learning</strong> destaca como uno de los métodos más implementados 
-        en el aprendizaje por refuerzo, ya que:
-      </p>
-      <ul>
-        <li><strong>Opera fuera de la política (off‑policy):</strong> permite al agente aprender la mejor estrategia posible incluso mientras explora de forma aleatoria o comete errores. Esto significa que la política que se está aprendiendo (la política objetivo) puede ser diferente de la política que se está utilizando para generar comportamiento (la política de comportamiento).</li>
-        <li><strong>Es libre de modelo (model‑free):</strong> toma decisiones mediante ensayo y error interactuando directamente con el entorno, sin necesidad de conocer las probabilidades de transición entre estados ni la función de recompensa del entorno. El agente no necesita un modelo del entorno, solo experiencia.</li>
-      </ul>
-      <p>
-        El núcleo de este algoritmo consiste en estimar una función de valor de acción, denominada 
-        <strong>función Q</strong> (Q(S<sub>t</sub>, A<sub>t</sub>)). Esta función proyecta el beneficio total 
-        que se espera obtener si, estando en un estado S<sub>t</sub>, se ejecuta una acción A<sub>t</sub> y, 
-        a partir de ese momento, se siguen tomando las mejores decisiones posibles. Cuando el escenario 
-        presenta un número limitado y discreto de estados y acciones, esta función se materializa en una 
-        estructura matricial conocida como <strong>Tabla Q</strong> (Q‑table), la cual actúa como la 
-        “memoria” del agente.
-      </p>
-      <p>
-        Los valores almacenados en esta tabla son actualizados continuamente luego de cada interacción 
-        entre el agente y el entorno. Para ello, se emplea una adaptación de la <strong>Ecuación de Bellman</strong> 
-        basada en el método de diferencias temporales:
-      </p>
-      <div class="eq-box">
-        Q(S<sub>t</sub>, A<sub>t</sub>) ← Q(S<sub>t</sub>, A<sub>t</sub>) + α [ R<sub>t+1</sub> + γ max<sub>a</sub> Q(S<sub>t+1</sub>, a) − Q(S<sub>t</sub>, A<sub>t</sub>) ]
-      </div>
-      <p>Cada término de la ecuación cumple un rol específico en el ajuste del conocimiento del agente:</p>
-      <ul>
-        <li><strong>Q(S<sub>t</sub>, A<sub>t</sub>)</strong>: valor estimado actual para el par estado‑acción.</li>
-        <li><strong>Tasa de aprendizaje (α)</strong>: un coeficiente (0 < α ≤ 1) que regula en qué proporción la nueva información adquirida sobrescribe el conocimiento previo. Un α alto hace que el agente aprenda rápidamente, pero puede ser inestable; un α bajo produce un aprendizaje más lento pero más estable.</li>
-        <li><strong>Recompensa (R<sub>t+1</sub>)</strong>: el incentivo o penalización inmediata que entrega el entorno tras ejecutar la acción elegida.</li>
-        <li><strong>Proyección futura (γ max<sub>a</sub> Q(S<sub>t+1</sub>, a))</strong>: el máximo beneficio que el agente estima obtener en el estado siguiente (S<sub>t+1</sub>), asumiendo que tomará la acción óptima (a). Esto se multiplica por el factor de descuento (γ) para ajustar la importancia de las recompensas futuras.</li>
-        <li><strong>Error de Diferencia Temporal (TD Error)</strong>: representado por la expresión completa entre corchetes [R<sub>t+1</sub> + γ max<sub>a</sub> Q(S<sub>t+1</sub>, a) − Q(S<sub>t</sub>, A<sub>t</sub>)]. Cuantifica la discrepancia entre la predicción original y el nuevo valor calculado. Un error TD positivo indica que la acción fue mejor de lo esperado, mientras que uno negativo indica lo contrario.</li>
-      </ul>
-      <p>
-        <strong>Convergencia:</strong> conforme el agente acumula experiencia a través de un número suficiente de iteraciones, 
-        los valores dentro de la Tabla Q convergen progresivamente hacia los valores reales óptimos, siempre que se cumplan 
-        ciertas condiciones (como visitar todos los pares estado‑acción un número infinito de veces). Una vez estabilizados, 
-        el sistema puede prescindir de la exploración y actuar de forma determinista, guiándose exclusivamente por la tabla 
-        para tomar, en cada paso, la decisión que garantice el máximo rendimiento. En la práctica, esto significa que el 
-        agente habrá aprendido la política óptima y podrá utilizarla sin necesidad de seguir explorando.
-      </p>
-      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
-    </section>
-
-    <!-- ==================== SLIDE 5: FRAUDES ==================== -->
-    <section class="slide" data-index="4">
-      <h2>5. Caso práctico: Detección de fraudes financieros</h2>
-      <p>
-        En la industria financiera, la detección de transacciones fraudulentas es un desafío constante, 
-        ya que los patrones de fraude evolucionan rápidamente y se ocultan entre millones de operaciones 
-        legítimas. Para ello, el Aprendizaje por Refuerzo ofrece un enfoque altamente adaptativo. 
-        Mediante Q‑Learning, se modela un agente que aprende de manera interactiva a tomar decisiones 
-        de clasificación. A través de la experiencia continua, el agente descubre por sí mismo cómo 
-        identificar comportamientos anómalos y puede, mediante prueba y error, adaptarse a nuevas 
-        tendencias que se desarrollen en el tiempo.
-      </p>
-
-      <h3>5.1 Modelado del problema en componentes de RL</h3>
-      <p>El escenario financiero se traduce en los siguientes componentes:</p>
-      <ul>
-        <li><strong>Entorno:</strong> el flujo continuo de transacciones financieras.</li>
-        <li><strong>Estados (S<sub>t</sub>):</strong> perfil simplificado de la transacción actual, por ejemplo, la combinación de “Monto” (Alto/Bajo) y “Ubicación” (Habitual/Inusual).</li>
-        <li><strong>Acciones (A<sub>t</sub>):</strong> ante cada perfil (estado), el agente ejecuta una de tres decisiones para clasificar la anomalía:
+      <section class="slide" data-index="2">
+        <h2>3. Proceso de aprendizaje mediante recompensas</h2>
+        <p>El proceso de aprendizaje se basa en la interacción continua entre el agente y su entorno. En cada instante <em>t</em>, el agente observa su estado actual (S<sub>t</sub>) y ejecuta una acción (A<sub>t</sub>). Como respuesta, el entorno transita a un nuevo estado (S<sub>t+1</sub>) y emite una recompensa o penalización (R<sub>t+1</sub>). Al carecer de instrucciones explícitas sobre qué acciones son correctas, el agente aprende mediante <strong>ensayo y error</strong>, ajustando su comportamiento para favorecer las decisiones que resultan rentables a largo plazo.</p>
+        <p>Este proceso iterativo permite al agente construir gradualmente una <strong>política</strong> que maximiza la señal de recompensa. La clave está en que el agente no solo considera el beneficio inmediato, sino que también evalúa las consecuencias futuras de sus acciones, lo que le permite planificar y adaptarse a entornos dinámicos.</p>
+        <div class="card">
+          <h3>Dilema entre exploración y explotación</h3>
+          <p>Para optimizar el aprendizaje, el sistema debe resolver un equilibrio fundamental:</p>
           <ul>
-            <li><span class="badge green">a₀</span> Aprobar: permitir la transacción (comportamiento normal).</li>
-            <li><span class="badge blue">a₁</span> Alertar: solicitar verificación adicional (anomalía sospechosa).</li>
-            <li><span class="badge red">a₂</span> Bloquear: rechazar la transacción inmediatamente (fraude).</li>
+            <li><strong>Explotación:</strong> utilizar decisiones conocidas y efectivas para asegurar un buen rendimiento inmediato. El agente elige la acción que, según su conocimiento actual, proporciona la mayor recompensa esperada.</li>
+            <li><strong>Exploración:</strong> probar alternativas desconocidas en la búsqueda de recompensas aún mayores, incluso si esto implica sacrificar rendimiento a corto plazo. La exploración es esencial para descubrir nuevas estrategias que pueden ser más beneficiosas a largo plazo.</li>
           </ul>
-        </li>
-      </ul>
+          <p>Este equilibrio se gestiona habitualmente con la estrategia <span class="highlight">ε‑greedy</span>, donde el agente explora al azar con una probabilidad ε y explota su conocimiento con probabilidad 1−ε. Conforme el agente va adquiriendo experiencia, la tasa de exploración ε se reduce gradualmente, permitiendo que el agente se centre en explotar el conocimiento ya adquirido.</p>
+        </div>
+        <p>El objetivo final del agente no es maximizar la recompensa inmediata, sino el <strong>retorno acumulado descontado</strong> a lo largo del tiempo, definido como:</p>
+        <div class="eq-box">G<sub>t</sub> = ∑<sub>k=0</sub><sup>∞</sup> γ<sup>k</sup> R<sub>t+k+1</sub></div>
+        <p>Donde el <span class="highlight">factor de descuento γ</span> (0 ≤ γ < 1) es un parámetro clave que define la “visión futura” del sistema. Un valor de γ cercano a 1 otorga un peso casi igual a las recompensas futuras, lo que permite al agente planificar a largo plazo y tomar decisiones que maximicen el beneficio total. Por el contrario, un γ cercano a 0 hace que el agente sea <strong>cortoplacista</strong>, enfocándose únicamente en la recompensa inmediata (R<sub>t+1</sub>) y descartando prácticamente las consecuencias futuras de sus acciones.</p>
+        <p>La elección de γ depende del problema: en tareas donde el agente necesita actuar con previsión (por ejemplo, gestión de inventarios o planificación financiera), se prefiere un γ alto. En problemas donde las acciones tienen efectos inmediatos y el entorno cambia rápidamente, un γ bajo puede ser más adecuado para evitar planes excesivamente largos que se vuelvan obsoletos.</p>
+        <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+      </section>
 
-      <h3>5.2 Sistema de recompensas y optimización</h3>
-      <p>
-        En escenarios donde el fraude es poco probable, medir solamente la exactitud puede resultar 
-        engañoso. Por ello, el sistema de recompensas se diseña para penalizar severamente los errores 
-        de seguridad y premiar cuando el agente realiza una detección precisa:
-      </p>
-      <div class="card">
+      <section class="slide" data-index="3">
+        <h2>4. Algoritmo Q‑Learning</h2>
+        <p>El algoritmo <strong>Q‑Learning</strong> destaca como uno de los métodos más implementados en el aprendizaje por refuerzo, ya que:</p>
         <ul>
-          <li><span class="badge green">+1</span> <strong>Verdadero Negativo:</strong> aprobar una transacción legítima (mantiene la fluidez del servicio).</li>
-          <li><span class="badge green">+15</span> <strong>Verdadero Positivo:</strong> bloquear un fraude real (detectar exitosamente la anomalía).</li>
-          <li><span class="badge red">−5</span> <strong>Falso Positivo:</strong> bloquear a un cliente legítimo (penalización debido a la baja gravedad).</li>
-          <li><span class="badge red">−50</span> <strong>Falso Negativo:</strong> aprobar un fraude (penalización crítica por dejar pasar la anomalía y generar pérdida económica).</li>
+          <li><strong>Opera fuera de la política (off‑policy):</strong> permite al agente aprender la mejor estrategia posible incluso mientras explora de forma aleatoria o comete errores. Esto significa que la política que se está aprendiendo (la política objetivo) puede ser diferente de la política que se está utilizando para generar comportamiento (la política de comportamiento).</li>
+          <li><strong>Es libre de modelo (model‑free):</strong> toma decisiones mediante ensayo y error interactuando directamente con el entorno, sin necesidad de conocer las probabilidades de transición entre estados ni la función de recompensa del entorno. El agente no necesita un modelo del entorno, solo experiencia.</li>
         </ul>
-      </div>
+        <p>El núcleo de este algoritmo consiste en estimar una función de valor de acción, denominada <strong>función Q</strong> (Q(S<sub>t</sub>, A<sub>t</sub>)). Esta función proyecta el beneficio total que se espera obtener si, estando en un estado S<sub>t</sub>, se ejecuta una acción A<sub>t</sub> y, a partir de ese momento, se siguen tomando las mejores decisiones posibles. Cuando el escenario presenta un número limitado y discreto de estados y acciones, esta función se materializa en una estructura matricial conocida como <strong>Tabla Q</strong> (Q‑table), la cual actúa como la “memoria” del agente.</p>
+        <p>Los valores almacenados en esta tabla son actualizados continuamente luego de cada interacción entre el agente y el entorno. Para ello, se emplea una adaptación de la <strong>Ecuación de Bellman</strong> basada en el método de diferencias temporales:</p>
+        <div class="eq-box">Q(S<sub>t</sub>, A<sub>t</sub>) ← Q(S<sub>t</sub>, A<sub>t</sub>) + α [ R<sub>t+1</sub> + γ max<sub>a</sub> Q(S<sub>t+1</sub>, a) − Q(S<sub>t</sub>, A<sub>t</sub>) ]</div>
+        <p>Cada término de la ecuación cumple un rol específico en el ajuste del conocimiento del agente:</p>
+        <ul>
+          <li><strong>Q(S<sub>t</sub>, A<sub>t</sub>)</strong>: valor estimado actual para el par estado‑acción.</li>
+          <li><strong>Tasa de aprendizaje (α)</strong>: un coeficiente (0 < α ≤ 1) que regula en qué proporción la nueva información adquirida sobrescribe el conocimiento previo. Un α alto hace que el agente aprenda rápidamente, pero puede ser inestable; un α bajo produce un aprendizaje más lento pero más estable.</li>
+          <li><strong>Recompensa (R<sub>t+1</sub>)</strong>: el incentivo o penalización inmediata que entrega el entorno tras ejecutar la acción elegida.</li>
+          <li><strong>Proyección futura (γ max<sub>a</sub> Q(S<sub>t+1</sub>, a))</strong>: el máximo beneficio que el agente estima obtener en el estado siguiente (S<sub>t+1</sub>), asumiendo que tomará la acción óptima (a). Esto se multiplica por el factor de descuento (γ) para ajustar la importancia de las recompensas futuras.</li>
+          <li><strong>Error de Diferencia Temporal (TD Error)</strong>: representado por la expresión completa entre corchetes [R<sub>t+1</sub> + γ max<sub>a</sub> Q(S<sub>t+1</sub>, a) − Q(S<sub>t</sub>, A<sub>t</sub>)]. Cuantifica la discrepancia entre la predicción original y el nuevo valor calculado. Un error TD positivo indica que la acción fue mejor de lo esperado, mientras que uno negativo indica lo contrario.</li>
+        </ul>
+        <p><strong>Convergencia:</strong> conforme el agente acumula experiencia a través de un número suficiente de iteraciones, los valores dentro de la Tabla Q convergen progresivamente hacia los valores reales óptimos, siempre que se cumplan ciertas condiciones (como visitar todos los pares estado‑acción un número infinito de veces). Una vez estabilizados, el sistema puede prescindir de la exploración y actuar de forma determinista, guiándose exclusivamente por la tabla para tomar, en cada paso, la decisión que garantice el máximo rendimiento. En la práctica, esto significa que el agente habrá aprendido la política óptima y podrá utilizarla sin necesidad de seguir explorando.</p>
+        <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+      </section>
 
-      <h3>5.3 Dinámica del aprendizaje</h3>
-      <p>
-        El proceso arranca con una Tabla Q inicializada en ceros. Inicialmente, el agente utiliza una 
-        política ε‑greedy para explorar el entorno de forma aleatoria, probando distintas acciones ante 
-        diferentes perfiles. Si el agente toma una mala decisión (por ejemplo, aprueba un fraude evidente 
-        y recibe la penalización de −50), se genera un gran error en la Ecuación de Actualización de 
-        Bellman, lo que reduce drásticamente el valor de la acción “Aprobar” para ese estado o perfil 
-        específico. Conforme la tasa de exploración disminuye progresivamente, el agente se ve obligado 
-        a explotar su conocimiento acumulado. Al final de las iteraciones, la Tabla Q converge hacia 
-        una política adaptativa robusta: el agente sabrá exactamente qué patrones representan situaciones 
-        anómalas que deben ser bloqueadas y cuáles son transacciones seguras, superando con creces la 
-        rigidez de los sistemas basados en reglas estáticas.
-      </p>
-      <p>
-        <strong>Convergencia:</strong> gracias a la naturaleza off‑policy de Q‑Learning, el agente puede 
-        aprender la política óptima incluso mientras explora, siempre que cada par estado‑acción sea 
-        visitado un número suficiente de veces. La exploración inicial (cold‑start) es fundamental para 
-        descubrir las recompensas asociadas a cada acción, pero debe ser controlada para no provocar 
-        pérdidas excesivas en producción.
-      </p>
+      <section class="slide" data-index="4">
+        <h2>5. Caso práctico: Detección de fraudes financieros</h2>
+        <p>En la industria financiera, la detección de transacciones fraudulentas es un desafío constante, ya que los patrones de fraude evolucionan rápidamente y se ocultan entre millones de operaciones legítimas. Para ello, el Aprendizaje por Refuerzo ofrece un enfoque altamente adaptativo. Mediante Q‑Learning, se modela un agente que aprende de manera interactiva a tomar decisiones de clasificación. A través de la experiencia continua, el agente descubre por sí mismo cómo identificar comportamientos anómalos y puede, mediante prueba y error, adaptarse a nuevas tendencias que se desarrollen en el tiempo.</p>
 
-      <h3>Tabla Q ilustrativa</h3>
-      <div class="q-table-wrapper">
-        <div class="q-table-fraud">
-          <div class="q-row q-header"><span>Estado</span><span>Aprobar</span><span>Alertar</span><span>Bloquear</span></div>
-          <div class="q-row"><span>Monto Alto · Ubic. Habitual</span><span class="q-cell max">8.2</span><span class="q-cell">3.1</span><span class="q-cell">−1.5</span></div>
-          <div class="q-row"><span>Monto Alto · Ubic. Inusual</span><span class="q-cell">−12.7</span><span class="q-cell max">6.4</span><span class="q-cell">5.8</span></div>
-          <div class="q-row"><span>Monto Bajo · Ubic. Habitual</span><span class="q-cell max">4.5</span><span class="q-cell">1.2</span><span class="q-cell">−0.8</span></div>
-          <div class="q-row"><span>Monto Bajo · Ubic. Inusual</span><span class="q-cell">−2.3</span><span class="q-cell max">3.9</span><span class="q-cell">2.1</span></div>
-        </div>
-      </div>
+        <h3>5.1 Modelado del problema en componentes de RL</h3>
+        <p>El escenario financiero se traduce en los siguientes componentes:</p>
+        <ul>
+          <li><strong>Entorno:</strong> el flujo continuo de transacciones financieras.</li>
+          <li><strong>Estados (S<sub>t</sub>):</strong> perfil simplificado de la transacción actual, por ejemplo, la combinación de “Monto” (Alto/Bajo) y “Ubicación” (Habitual/Inusual).</li>
+          <li><strong>Acciones (A<sub>t</sub>):</strong> ante cada perfil (estado), el agente ejecuta una de tres decisiones para clasificar la anomalía:
+            <ul>
+              <li><span class="badge green">a₀</span> Aprobar: permitir la transacción (comportamiento normal).</li>
+              <li><span class="badge blue">a₁</span> Alertar: solicitar verificación adicional (anomalía sospechosa).</li>
+              <li><span class="badge red">a₂</span> Bloquear: rechazar la transacción inmediatamente (fraude).</li>
+            </ul>
+          </li>
+        </ul>
 
-      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
-    </section>
-
-    <!-- ==================== SLIDE 6: SIMULACIÓN ==================== -->
-    <section class="slide" data-index="5">
-      <h2>6. Simulación interactiva: Grid World</h2>
-      <p>
-        Para comprender mejor el funcionamiento interno de Q‑Learning, se ha desarrollado una 
-        <strong>simulación interactiva</strong> en un entorno de cuadrícula (Grid World). 
-        El objetivo es que un agente aprenda a moverse por un tablero de 5×5 evitando obstáculos 
-        hasta alcanzar una celda meta (la esquina inferior derecha).
-      </p>
-      <p>
-        <strong>¿Qué hace la simulación?</strong> El agente comienza en la esquina superior izquierda 
-        y, mediante el algoritmo Q‑Learning, va actualizando su Tabla Q a medida que explora el entorno. 
-        En cada paso, el agente elige una acción (arriba, abajo, izquierda o derecha) siguiendo una 
-        política ε‑greedy. Si la acción lo lleva a una celda válida (dentro del tablero y sin obstáculo), 
-        recibe una recompensa: −0.1 por cada paso (para incentivar la rapidez), −1 si intenta moverse 
-        a una celda inválida, y +10 si alcanza la meta. Con estos valores, la Tabla Q se actualiza 
-        aplicando la ecuación de Bellman.
-      </p>
-      <p>
-        <strong>Parámetros ajustables:</strong> el usuario puede modificar en tiempo real la 
-        <em>tasa de aprendizaje (α)</em> (qué tanto influye la nueva información), el 
-        <em>factor de descuento (γ)</em> (visión a corto o largo plazo), la 
-        <em>probabilidad de exploración (ε)</em> (cuánto explora frente a explota) y la 
-        <em>velocidad de reproducción</em> (para observar el proceso paso a paso o más rápido). 
-        Estos controles permiten experimentar con diferentes configuraciones y ver cómo afectan 
-        la convergencia del aprendizaje.
-      </p>
-      <p>
-        <strong>Visualización:</strong> en el canvas se dibuja el tablero con el agente (círculo azul), 
-        la meta (cuadrado amarillo) y los obstáculos (celdas grises). Además, se muestra una mini 
-        Tabla Q donde cada celda presenta el valor máximo de Q para ese estado, permitiendo ver 
-        cómo evoluciona el conocimiento del agente. Las estadísticas (número de episodios, pasos 
-        totales y recompensa acumulada) ofrecen una métrica del rendimiento.
-      </p>
-      <p>
-        <strong>Controles:</strong> los botones “Iniciar/Pausar” y “Reiniciar” permiten controlar 
-        la simulación. Al iniciar, el agente comienza a aprender y reinicia automáticamente al 
-        llegar a la meta, acumulando episodios. Esto demuestra cómo, con el tiempo, el agente 
-        aprende rutas más eficientes.
-      </p>
-
-      <div class="sim-wrapper">
-        <div class="grid-canvas-container">
-          <canvas id="gridCanvas" width="400" height="400"></canvas>
-        </div>
-        <div class="controls">
-          <h3 style="margin-top:0; color:#f0f0f0;">Controles</h3>
-          <label>Tasa aprendizaje (α): <span class="val" id="alphaVal">0.50</span></label>
-          <input type="range" id="alphaSlider" min="0.05" max="1.0" step="0.05" value="0.50" />
-          <label>Factor descuento (γ): <span class="val" id="gammaVal">0.90</span></label>
-          <input type="range" id="gammaSlider" min="0.50" max="0.99" step="0.01" value="0.90" />
-          <label>Exploración (ε): <span class="val" id="epsilonVal">0.20</span></label>
-          <input type="range" id="epsilonSlider" min="0.00" max="0.50" step="0.01" value="0.20" />
-          <label>Velocidad (ms): <span class="val" id="speedVal">200</span></label>
-          <input type="range" id="speedSlider" min="50" max="800" step="10" value="200" />
-
-          <div class="controls-row">
-            <div class="btn-group">
-              <button class="btn btn-success" id="startBtn">Iniciar</button>
-              <button class="btn btn-danger" id="resetBtn">Reiniciar</button>
-            </div>
-            <div class="stats">
-              <div>Episodios: <span id="episodeCount">0</span></div>
-              <div>Pasos: <span id="stepCount">0</span></div>
-              <div>Recompensa: <span id="totalReward">0</span></div>
-            </div>
-          </div>
-
-          <div style="margin-top:0.3rem; font-size:0.75rem; color:#94a3b8;">
-            <span style="display:inline-block; width:12px; height:12px; background:#214E34; border-radius:4px;"></span> Agente · 
-            <span style="display:inline-block; width:12px; height:12px; background:#facc15; border-radius:4px;"></span> Meta · 
-            <span style="display:inline-block; width:12px; height:12px; background:#4a4a4a; border-radius:4px;"></span> Obstáculo
-          </div>
-          <div style="margin-top:0.6rem;">
-            <div style="font-weight:500; font-size:0.75rem; color:#cbd5e1;">Q‑Table (máx. por celda)</div>
-            <div class="q-grid-mini" id="qGridMini"></div>
-          </div>
-        </div>
-      </div>
-      <div class="slide-footer">Simulación basada en Q‑Learning</div>
-    </section>
-
-    <!-- ==================== SLIDE 7: CONCLUSIONES ==================== -->
-    <section class="slide" data-index="6">
-      <h2>7. Conclusiones y limitaciones</h2>
-      <div class="grid-2">
-        <div>
-          <h3>Conclusiones</h3>
-          <p>
-            El Aprendizaje por Refuerzo supera a los sistemas de reglas estáticas gracias a su 
-            capacidad de adaptación autónoma. En detección de fraudes, Q‑Learning optimiza el balance 
-            entre seguridad y experiencia de usuario mediante un sistema de recompensas bien calibrado.
-          </p>
-        </div>
-        <div>
-          <h3>Limitaciones</h3>
+        <h3>5.2 Sistema de recompensas y optimización</h3>
+        <p>En escenarios donde el fraude es poco probable, medir solamente la exactitud puede resultar engañoso. Por ello, el sistema de recompensas se diseña para penalizar severamente los errores de seguridad y premiar cuando el agente realiza una detección precisa:</p>
+        <div class="card">
           <ul>
-            <li><strong>Arranque en frío:</strong> la exploración inicial produce decisiones erróneas; se requiere entrenamiento previo.</li>
-            <li><strong>Maldición de la dimensionalidad:</strong> si el perfil incluye muchas variables, la Tabla Q crece exponencialmente; se necesita <em>Deep RL</em>.</li>
-            <li><strong>Sensibilidad de recompensas:</strong> el comportamiento depende de los valores asignados; una mala calibración puede sesgar la política.</li>
+            <li><span class="badge green">+1</span> <strong>Verdadero Negativo:</strong> aprobar una transacción legítima (mantiene la fluidez del servicio).</li>
+            <li><span class="badge green">+15</span> <strong>Verdadero Positivo:</strong> bloquear un fraude real (detectar exitosamente la anomalía).</li>
+            <li><span class="badge red">−5</span> <strong>Falso Positivo:</strong> bloquear a un cliente legítimo (penalización debido a la baja gravedad).</li>
+            <li><span class="badge red">−50</span> <strong>Falso Negativo:</strong> aprobar un fraude (penalización crítica por dejar pasar la anomalía y generar pérdida económica).</li>
           </ul>
         </div>
-      </div>
-      <div style="margin-top:1.5rem;">
-        <h3>Referencias</h3>
-        <p>Sutton, R. S., &amp; Barto, A. G. (2018). <em>Reinforcement Learning: An Introduction</em> (2ª ed.). The MIT Press.</p>
-      </div>
-      <div class="slide-footer">Proyecto Final · ICC608 · David Baez · 2026</div>
-    </section>
 
+        <h3>5.3 Dinámica del aprendizaje</h3>
+        <p>El proceso arranca con una Tabla Q inicializada en ceros. Inicialmente, el agente utiliza una política ε‑greedy para explorar el entorno de forma aleatoria, probando distintas acciones ante diferentes perfiles. Si el agente toma una mala decisión (por ejemplo, aprueba un fraude evidente y recibe la penalización de −50), se genera un gran error en la Ecuación de Actualización de Bellman, lo que reduce drásticamente el valor de la acción “Aprobar” para ese estado o perfil específico. Conforme la tasa de exploración disminuye progresivamente, el agente se ve obligado a explotar su conocimiento acumulado. Al final de las iteraciones, la Tabla Q converge hacia una política adaptativa robusta: el agente sabrá exactamente qué patrones representan situaciones anómalas que deben ser bloqueadas y cuáles son transacciones seguras, superando con creces la rigidez de los sistemas basados en reglas estáticas.</p>
+        <p><strong>Convergencia:</strong> gracias a la naturaleza off‑policy de Q‑Learning, el agente puede aprender la política óptima incluso mientras explora, siempre que cada par estado‑acción sea visitado un número suficiente de veces. La exploración inicial (cold‑start) es fundamental para descubrir las recompensas asociadas a cada acción, pero debe ser controlada para no provocar pérdidas excesivas en producción.</p>
+
+        <h3>Tabla Q ilustrativa</h3>
+        <div class="q-table-wrapper">
+          <div class="q-table-fraud">
+            <div class="q-row q-header"><span>Estado</span><span>Aprobar</span><span>Alertar</span><span>Bloquear</span></div>
+            <div class="q-row"><span>Monto Alto · Ubic. Habitual</span><span class="q-cell max">8.2</span><span class="q-cell">3.1</span><span class="q-cell">−1.5</span></div>
+            <div class="q-row"><span>Monto Alto · Ubic. Inusual</span><span class="q-cell">−12.7</span><span class="q-cell max">6.4</span><span class="q-cell">5.8</span></div>
+            <div class="q-row"><span>Monto Bajo · Ubic. Habitual</span><span class="q-cell max">4.5</span><span class="q-cell">1.2</span><span class="q-cell">−0.8</span></div>
+            <div class="q-row"><span>Monto Bajo · Ubic. Inusual</span><span class="q-cell">−2.3</span><span class="q-cell max">3.9</span><span class="q-cell">2.1</span></div>
+          </div>
+        </div>
+
+        <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+      </section>
+
+      <section class="slide" data-index="5">
+        <h2>6. Simulación interactiva: Grid World</h2>
+        <p>Para comprender mejor el funcionamiento interno de Q‑Learning, se ha desarrollado una <strong>simulación interactiva</strong> en un entorno de cuadrícula (Grid World). El objetivo es que un agente aprenda a moverse por un tablero de 5×5 evitando obstáculos hasta alcanzar una celda meta (la esquina inferior derecha).</p>
+        <p><strong>¿Qué hace la simulación?</strong> El agente comienza en la esquina superior izquierda y, mediante el algoritmo Q‑Learning, va actualizando su Tabla Q a medida que explora el entorno. En cada paso, el agente elige una acción (arriba, abajo, izquierda o derecha) siguiendo una política ε‑greedy. Si la acción lo lleva a una celda válida (dentro del tablero y sin obstáculo), recibe una recompensa: −0.1 por cada paso (para incentivar la rapidez), −1 si intenta moverse a una celda inválida, y +10 si alcanza la meta. Con estos valores, la Tabla Q se actualiza aplicando la ecuación de Bellman.</p>
+        <p><strong>Parámetros ajustables:</strong> el usuario puede modificar en tiempo real la <em>tasa de aprendizaje (α)</em> (qué tanto influye la nueva información), el <em>factor de descuento (γ)</em> (visión a corto o largo plazo), la <em>probabilidad de exploración (ε)</em> (cuánto explora frente a explota) y la <em>velocidad de reproducción</em> (para observar el proceso paso a paso o más rápido). Estos controles permiten experimentar con diferentes configuraciones y ver cómo afectan la convergencia del aprendizaje.</p>
+        <p><strong>Visualización:</strong> en el canvas se dibuja el tablero con el agente (círculo azul), la meta (cuadrado amarillo) y los obstáculos (celdas grises). Además, se muestra una mini Tabla Q donde cada celda presenta el valor máximo de Q para ese estado, permitiendo ver cómo evoluciona el conocimiento del agente. Las estadísticas (número de episodios, pasos totales y recompensa acumulada) ofrecen una métrica del rendimiento.</p>
+        <p><strong>Controles:</strong> los botones “Iniciar/Pausar” y “Reiniciar” permiten controlar la simulación. Al iniciar, el agente comienza a aprender y reinicia automáticamente al llegar a la meta, acumulando episodios. Esto demuestra cómo, con el tiempo, el agente aprende rutas más eficientes.</p>
+
+        <div class="sim-wrapper">
+          <div class="grid-canvas-container">
+            <canvas id="gridCanvas" width="400" height="400"></canvas>
+          </div>
+          <div class="controls">
+            <h3 style="margin-top:0; color:#f0f0f0;">Controles</h3>
+            <label>Tasa aprendizaje (α): <span class="val" id="alphaVal">0.50</span></label>
+            <input type="range" id="alphaSlider" min="0.05" max="1.0" step="0.05" value="0.50" />
+            <label>Factor descuento (γ): <span class="val" id="gammaVal">0.90</span></label>
+            <input type="range" id="gammaSlider" min="0.50" max="0.99" step="0.01" value="0.90" />
+            <label>Exploración (ε): <span class="val" id="epsilonVal">0.20</span></label>
+            <input type="range" id="epsilonSlider" min="0.00" max="0.50" step="0.01" value="0.20" />
+            <label>Velocidad (ms): <span class="val" id="speedVal">200</span></label>
+            <input type="range" id="speedSlider" min="50" max="800" step="10" value="200" />
+
+            <div class="controls-row">
+              <div class="btn-group">
+                <button class="btn btn-success" id="startBtn">Iniciar</button>
+                <button class="btn btn-danger" id="resetBtn">Reiniciar</button>
+              </div>
+              <div class="stats">
+                <div>Episodios: <span id="episodeCount">0</span></div>
+                <div>Pasos: <span id="stepCount">0</span></div>
+                <div>Recompensa: <span id="totalReward">0</span></div>
+              </div>
+            </div>
+
+            <div style="margin-top:0.3rem; font-size:0.75rem; color:#94a3b8;">
+              <span style="display:inline-block; width:12px; height:12px; background:#214E34; border-radius:4px;"></span> Agente ·
+              <span style="display:inline-block; width:12px; height:12px; background:#facc15; border-radius:4px;"></span> Meta ·
+              <span style="display:inline-block; width:12px; height:12px; background:#4a4a4a; border-radius:4px;"></span> Obstáculo
+            </div>
+            <div style="margin-top:0.6rem;">
+              <div style="font-weight:500; font-size:0.75rem; color:#cbd5e1;">Q‑Table (máx. por celda)</div>
+              <div class="q-grid-mini" id="qGridMini"></div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-footer">Simulación basada en Q‑Learning</div>
+      </section>
+
+      <section class="slide" data-index="6">
+        <h2>7. Conclusiones y limitaciones</h2>
+        <div class="grid-2">
+          <div>
+            <h3>Conclusiones</h3>
+            <p>El Aprendizaje por Refuerzo supera a los sistemas de reglas estáticas gracias a su capacidad de adaptación autónoma. En detección de fraudes, Q‑Learning optimiza el balance entre seguridad y experiencia de usuario mediante un sistema de recompensas bien calibrado.</p>
+          </div>
+          <div>
+            <h3>Limitaciones</h3>
+            <ul>
+              <li><strong>Arranque en frío:</strong> la exploración inicial produce decisiones erróneas; se requiere entrenamiento previo.</li>
+              <li><strong>Maldición de la dimensionalidad:</strong> si el perfil incluye muchas variables, la Tabla Q crece exponencialmente; se necesita <em>Deep RL</em>.</li>
+              <li><strong>Sensibilidad de recompensas:</strong> el comportamiento depende de los valores asignados; una mala calibración puede sesgar la política.</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <h3>Referencias</h3>
+          <p>Sutton, R. S., &amp; Barto, A. G. (2018). <em>Reinforcement Learning: An Introduction</em> (2ª ed.). The MIT Press.</p>
+        </div>
+        <div class="slide-footer">Proyecto Final · ICC608 · David Baez · 2026</div>
+      </section>
+    </div>
   </div>
-</div>
 
-<!-- BOTONES DE NAVEGACIÓN -->
-<button class="nav-btn left" id="prevBtn" aria-label="Anterior">‹</button>
-<button class="nav-btn right" id="nextBtn" aria-label="Siguiente">›</button>
+  <button class="nav-btn left" id="prevBtn" aria-label="Anterior">‹</button>
+  <button class="nav-btn right" id="nextBtn" aria-label="Siguiente">›</button>
 
-<!-- INDICADORES INFERIORES -->
-<div class="page-indicator" id="pageIndicator"></div>
+  <div class="page-indicator" id="pageIndicator"></div>
 
-<!-- ========================================================== -->
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
