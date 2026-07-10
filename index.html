@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aprendizaje por Refuerzo · Q‑Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    /* ---------- PALETA CON ACENTOS VERDES ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      overflow: hidden;
+    }
+
+    /* ---------- HEADER ---------- */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(15, 15, 15, 0.92);
+      backdrop-filter: blur(8px);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .header a {
+      color: #94a3b8;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 30px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .header a:hover,
+    .header a.active {
+      background: #2a2a2a;
+      color: #f0f0f0;
+    }
+    .header .slide-indicator {
+      color: #7DC89A;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    /* ---------- CONTENEDOR DE DIAPOSITIVAS ---------- */
+    .slides-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      margin-top: 54px;
+    }
+    .slides-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: transform;
+    }
+
+    .slide {
+      flex: 0 0 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 2rem 3rem 3rem;
+      background: #0f0f0f;
+      scrollbar-width: thin;
+      scrollbar-color: #2a2a2a #1a1a1a;
+    }
+    .slide::-webkit-scrollbar { width: 6px; }
+    .slide::-webkit-scrollbar-track { background: #1a1a1a; }
+    .slide::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 8px; }
+
+    .slide h2 {
+      font-size: 2rem;
+      color: #7DC89A;
+      border-left: 5px solid #214E34;
+      padding-left: 1rem;
+      margin-bottom: 1.2rem;
+      margin-top: 0.2rem;
+    }
+    .slide h3 {
+      color: #5A9E73;
+      margin-top: 1.5rem;
+      margin-bottom: 0.6rem;
+      font-size: 1.2rem;
+    }
+    .slide p {
+      color: #d1d9e6;
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+    }
+    .slide ul, .slide ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+      color: #d1d9e6;
+    }
+    .slide li {
+      margin-bottom: 0.4rem;
+    }
+    .slide .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 1.2rem;
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0 1.5rem 0;
+    }
+    .slide .highlight {
+      background: #123324;
+      color: #8BC3A0;
+      padding: 0.1rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .slide .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 700px) {
+      .slide { padding: 1.5rem; }
+      .slide .grid-2 { grid-template-columns: 1fr; }
+      .header a { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
+    }
+
+    /* ---------- TABLA Q (fraudes) ---------- */
+    .q-table-wrapper {
+      overflow-x: auto;
+      margin: 0.8rem 0 1.5rem 0;
+      border-radius: 0.8rem;
+      background: #1a1a1a;
+    }
+    .q-table-fraud {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.9rem;
+      min-width: 400px;
+    }
+    .q-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 1fr 1fr;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.1rem 0.3rem;
+    }
+    .q-row.q-header {
+      font-weight: 600;
+      color: #cbd5e1;
+      border-bottom: 2px solid #2a2a2a;
+      padding-bottom: 0.3rem;
+    }
+    .q-cell {
+      background: #0f0f0f;
+      padding: 0.3rem 0.6rem;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #2a2a2a;
+      color: #e0e0e0;
+    }
+    .q-cell.max {
+      background: #0D2419;
+      border-color: #214E34;
+      font-weight: 600;
+      color: #7DC89A;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.1rem 0.7rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      border: 1px solid #2a2a2a;
+    }
+    .badge.green { background: #0f2a1a; color: #86d9a0; border-color: #2a4a3a; }
+    .badge.red { background: #2a0f0f; color: #f8a0a0; border-color: #4a2a2a; }
+    .badge.blue { background: #0f1a2a; color: #8bbaff; border-color: #2a3a4a; }
+
+    /* ---------- DIAGRAMAS ---------- */
+    .diagram-box {
+      background: #1a1a1a;
+      border-radius: 1rem;
+      padding: 1rem;
+      text-align: center;
+      margin: 1rem 0 1.5rem 0;
+      border: 1px solid #2a2a2a;
+    }
+    .diagram-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+    }
+
+    /* ---------- SIMULACIÓN ---------- */
+    .sim-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    #gridCanvas {
+      border-radius: 1.2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      background: #1a1a1a;
+      display: block;
+      width: 400px;
+      height: 400px;
+      border: 1px solid #2a2a2a;
+    }
+    .controls {
+      flex: 1;
+      min-width: 220px;
+      background: #1a1a1a;
+      border-radius: 1.2rem;
+      padding: 1.2rem;
+      border: 1px solid #2a2a2a;
+    }
+    .controls label {
+      display: block;
+      font-weight: 500;
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+    .controls input[type="range"] {
+      width: 100%;
+      margin: 0.2rem 0 0.3rem;
+      background: #2a2a2a;
+      height: 6px;
+      border-radius: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .controls input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #214E34;
+      cursor: pointer;
+    }
+    .controls .val {
+      font-weight: 600;
+      color: #7DC89A;
+    }
+
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin: 0.8rem 0 0.3rem;
+    }
+    .btn-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: #2a2a2a;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #e0e0e0;
+      border: 1px solid #2a2a2a;
+    }
+    .btn-primary {
+      background: #0D2419;
+      color: #7DC89A;
+      border-color: #214E34;
+    }
+    .btn-primary:hover { background: #123324; }
+    .btn-success { background: #0f2a1a; color: #86d9a0; border-color: #2a4a3a; }
+    .btn-success:hover { background: #1a3a2a; }
+    .btn-danger { background: #2a0f0f; color: #f8a0a0; border-color: #4a2a2a; }
+    .btn-danger:hover { background: #3a1a1a; }
+    .btn:disabled { opacity: 0.5; pointer-events: none; }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 1.5rem;
+      font-size: 0.85rem;
+      background: #0f0f0f;
+      padding: 0.4rem 0.8rem;
+      border-radius: 1rem;
+      border: 1px solid #2a2a2a;
+      color: #cbd5e1;
+    }
+    .stats span {
+      font-weight: 600;
+      color: #7DC89A;
+    }
+
+    .q-grid-mini {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+      max-width: 180px;
+      margin: 0.5rem 0;
+    }
+    .q-grid-cell {
+      background: #0f0f0f;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      padding: 3px 1px;
+      font-size: 0.55rem;
+      text-align: center;
+      font-weight: 500;
+      color: #e0e0e0;
+      transition: background 0.2s;
+    }
+
+    /* ---------- BOTONES DE NAVEGACIÓN ---------- */
+    .nav-btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(26, 26, 26, 0.8);
+      backdrop-filter: blur(4px);
+      border: 2px solid #214E34;
+      color: #214E34;
+      font-size: 1.6rem;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s;
+      user-select: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    }
+    .nav-btn:hover {
+      background: #2a2a2a;
+      border-color: #7DC89A;
+      color: #7DC89A;
+      transform: translateY(-50%) scale(1.05);
+    }
+    .nav-btn.left { left: 1.2rem; }
+    .nav-btn.right { right: 1.2rem; }
+    @media (max-width: 600px) {
+      .nav-btn { width: 36px; height: 36px; font-size: 1.2rem; }
+      .nav-btn.left { left: 0.6rem; }
+      .nav-btn.right { right: 0.6rem; }
+      #gridCanvas { width: 280px; height: 280px; }
+    }
+
+    /* Indicador de páginas */
+    .page-indicator {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      display: flex;
+      gap: 0.6rem;
+      background: rgba(15, 15, 15, 0.8);
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+      border: 1px solid #2a2a2a;
+    }
+    .page-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .page-dot.active {
+      background: #214E34;
+      border-color: #214E34;
+      transform: scale(1.2);
+    }
+    .page-dot:hover { background: #3a3a3a; }
+
+    /* ---------- FÓRMULAS CENTRADAS ---------- */
+    .eq-box {
+      background: #0D2419;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      display: block;
+      margin: 0.5rem auto;
+      font-family: 'Courier New', monospace;
+      color: #7DC89A;
+      border-left: 4px solid #214E34;
+      text-align: center;
+      width: fit-content;
+      max-width: 90%;
+    }
+
+    .slide-footer {
+      margin-top: 2rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid #2a2a2a;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .slides-wrapper { scrollbar-width: none; }
+    .slides-wrapper::-webkit-scrollbar { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER FIJO -->
+<header class="header" id="mainHeader">
+  <a href="#" data-slide="0" class="active">1. Intro</a>
+  <a href="#" data-slide="1">2. Conceptos</a>
+  <a href="#" data-slide="2">3. Aprendizaje</a>
+  <a href="#" data-slide="3">4. Q‑Learning</a>
+  <a href="#" data-slide="4">5. Fraudes</a>
+  <a href="#" data-slide="5">6. Simulación</a>
+  <a href="#" data-slide="6">7. Conclusiones</a>
+  <span class="slide-indicator" id="slideIndicator">1 / 7</span>
+</header>
+
+<!-- CONTENEDOR DE DIAPOSITIVAS -->
+<div class="slides-wrapper">
+  <div class="slides-container" id="slidesContainer">
+
+    <!-- ==================== SLIDE 1: INTRODUCCIÓN ==================== -->
+    <section class="slide" data-index="0">
+      <h2>1. Introducción al Aprendizaje por Refuerzo</h2>
+      <p>
+        Dentro del <em>machine learning</em> existen tres grandes categorías: supervisado, no supervisado y por refuerzo. 
+        El supervisado usa datos etiquetados; el no supervisado busca patrones sin etiquetas. 
+        El <strong>Aprendizaje por Refuerzo</strong> (RL) se basa en el principio de <strong>prueba y error</strong>, 
+        similar a cómo aprenden los humanos.
+      </p>
+      <p>
+        Su objetivo no es clasificar o agrupar, sino <strong>maximizar una señal de recompensa numérica</strong> 
+        a lo largo del tiempo. El agente interactúa con un entorno, toma decisiones y recibe retroalimentación 
+        (recompensas o penalizaciones) que le permiten mejorar su estrategia.
+      </p>
+      <div class="card">
+        <p><strong>Relevancia actual:</strong> El RL es clave en sistemas autónomos, robótica, juegos, finanzas 
+        y cualquier dominio que requiera adaptación en tiempo real a entornos cambiantes.</p>
+      </div>
+
+      <!-- DIAGRAMA EN PNG (sin pie de foto) -->
+      <div class="diagram-box">
+        <img src="images/diagrama_agente_entorno.png" alt="Diagrama de interacción agente-entorno en RL" />
+      </div>
+
+      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+    </section>
+
+    <!-- ==================== SLIDE 2: CONCEPTOS ==================== -->
+    <section class="slide" data-index="1">
+      <h2>2. Conceptos fundamentales</h2>
+      <p>El RL se estructura en torno a los siguientes elementos clave, según la definición del informe:</p>
+      <div class="grid-2">
+        <div>
+          <h3>Agente</h3>
+          <p>Es la entidad que aprende y toma decisiones. Su límite está definido por su capacidad de control directo; todo sistema que el agente no pueda modificar arbitrariamente se considera externo a él.</p>
+        </div>
+        <div>
+          <h3>Entorno</h3>
+          <p>Representa todo aquello externo al control del agente. Es el sistema que reacciona a las acciones ejecutadas, devolviendo nuevas situaciones (estados) y señales de evaluación (recompensas).</p>
+        </div>
+        <div>
+          <h3>Estado (S)</h3>
+          <p>Es la representación de la situación actual del entorno en un instante discreto <em>t</em>, denotado como S<sub>t</sub> ∈ S. Puede ir desde lecturas sensoriales básicas hasta descripciones abstractas complejas.</p>
+        </div>
+        <div>
+          <h3>Acción (A)</h3>
+          <p>Es la decisión ejecutada por el agente, A<sub>t</sub> ∈ A(s), en respuesta al estado actual. El conjunto de acciones disponibles puede depender del estado.</p>
+        </div>
+        <div>
+          <h3>Recompensa (R)</h3>
+          <p>Señal numérica (R<sub>t</sub> ∈ R) enviada por el entorno que evalúa el éxito de una acción. Define la meta del problema: el objetivo único del agente es maximizar su acumulación a largo plazo. Informa <em>qué</em> se debe lograr, no <em>cómo</em>.</p>
+        </div>
+        <div>
+          <h3>Política (π)</h3>
+          <p>Es la estrategia que dicta el comportamiento del agente. Formalmente, π(a|s) denota la probabilidad de seleccionar la acción A<sub>t</sub> = a dado que el entorno se encuentra en el estado S<sub>t</sub> = s.</p>
+        </div>
+      </div>
+      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+    </section>
+
+    <!-- ==================== SLIDE 3: PROCESO DE APRENDIZAJE ==================== -->
+    <section class="slide" data-index="2">
+      <h2>3. Proceso de aprendizaje mediante recompensas</h2>
+      <p>
+        El proceso de aprendizaje se basa en la interacción continua entre el agente y su entorno. 
+        En cada instante <em>t</em>, el agente observa su estado actual (S<sub>t</sub>) y ejecuta 
+        una acción (A<sub>t</sub>). Como respuesta, el entorno transita a un nuevo estado 
+        (S<sub>t+1</sub>) y emite una recompensa o penalización (R<sub>t+1</sub>). 
+        Al carecer de instrucciones explícitas sobre qué acciones son correctas, el agente 
+        aprende mediante <strong>ensayo y error</strong>, ajustando su comportamiento para 
+        favorecer las decisiones que resultan rentables a largo plazo.
+      </p>
+      <p>
+        Este proceso iterativo permite al agente construir gradualmente una <strong>política</strong> 
+        que maximiza la señal de recompensa. La clave está en que el agente no solo considera 
+        el beneficio inmediato, sino que también evalúa las consecuencias futuras de sus acciones, 
+        lo que le permite planificar y adaptarse a entornos dinámicos.
+      </p>
+      <div class="card">
+        <h3>Dilema entre exploración y explotación</h3>
+        <p>
+          Para optimizar el aprendizaje, el sistema debe resolver un equilibrio fundamental:
+        </p>
+        <ul>
+          <li><strong>Explotación:</strong> utilizar decisiones conocidas y efectivas para asegurar un buen rendimiento inmediato. El agente elige la acción que, según su conocimiento actual, proporciona la mayor recompensa esperada.</li>
+          <li><strong>Exploración:</strong> probar alternativas desconocidas en la búsqueda de recompensas aún mayores, incluso si esto implica sacrificar rendimiento a corto plazo. La exploración es esencial para descubrir nuevas estrategias que pueden ser más beneficiosas a largo plazo.</li>
+        </ul>
+        <p>
+          Este equilibrio se gestiona habitualmente con la estrategia <span class="highlight">ε‑greedy</span>, 
+          donde el agente explora al azar con una probabilidad ε y explota su conocimiento con probabilidad 1−ε. 
+          Conforme el agente va adquiriendo experiencia, la tasa de exploración ε se reduce gradualmente, 
+          permitiendo que el agente se centre en explotar el conocimiento ya adquirido.
+        </p>
+      </div>
+      <p>
+        El objetivo final del agente no es maximizar la recompensa inmediata, sino el 
+        <strong>retorno acumulado descontado</strong> a lo largo del tiempo, definido como:
+      </p>
+      <div class="eq-box">G<sub>t</sub> = ∑<sub>k=0</sub><sup>∞</sup> γ<sup>k</sup> R<sub>t+k+1</sub></div>
+      <p>
+        Donde el <span class="highlight">factor de descuento γ</span> (0 ≤ γ < 1) es un parámetro 
+        clave que define la “visión futura” del sistema. Un valor de γ cercano a 1 otorga un peso 
+        casi igual a las recompensas futuras, lo que permite al agente planificar a largo plazo 
+        y tomar decisiones que maximicen el beneficio total. Por el contrario, un γ cercano a 0 
+        hace que el agente sea <strong>cortoplacista</strong>, enfocándose únicamente en la 
+        recompensa inmediata (R<sub>t+1</sub>) y descartando prácticamente las consecuencias 
+        futuras de sus acciones.
+      </p>
+      <p>
+        La elección de γ depende del problema: en tareas donde el agente necesita actuar con 
+        previsión (por ejemplo, gestión de inventarios o planificación financiera), se prefiere 
+        un γ alto. En problemas donde las acciones tienen efectos inmediatos y el entorno cambia 
+        rápidamente, un γ bajo puede ser más adecuado para evitar planes excesivamente largos 
+        que se vuelvan obsoletos.
+      </p>
+      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+    </section>
+
+    <!-- ==================== SLIDE 4: Q-LEARNING ==================== -->
+    <section class="slide" data-index="3">
+      <h2>4. Algoritmo Q‑Learning</h2>
+      <p>
+        El algoritmo <strong>Q‑Learning</strong> destaca como uno de los métodos más implementados 
+        en el aprendizaje por refuerzo, ya que:
+      </p>
+      <ul>
+        <li><strong>Opera fuera de la política (off‑policy):</strong> permite al agente aprender la mejor estrategia posible incluso mientras explora de forma aleatoria o comete errores. Esto significa que la política que se está aprendiendo (la política objetivo) puede ser diferente de la política que se está utilizando para generar comportamiento (la política de comportamiento).</li>
+        <li><strong>Es libre de modelo (model‑free):</strong> toma decisiones mediante ensayo y error interactuando directamente con el entorno, sin necesidad de conocer las probabilidades de transición entre estados ni la función de recompensa del entorno. El agente no necesita un modelo del entorno, solo experiencia.</li>
+      </ul>
+      <p>
+        El núcleo de este algoritmo consiste en estimar una función de valor de acción, denominada 
+        <strong>función Q</strong> (Q(S<sub>t</sub>, A<sub>t</sub>)). Esta función proyecta el beneficio total 
+        que se espera obtener si, estando en un estado S<sub>t</sub>, se ejecuta una acción A<sub>t</sub> y, 
+        a partir de ese momento, se siguen tomando las mejores decisiones posibles. Cuando el escenario 
+        presenta un número limitado y discreto de estados y acciones, esta función se materializa en una 
+        estructura matricial conocida como <strong>Tabla Q</strong> (Q‑table), la cual actúa como la 
+        “memoria” del agente.
+      </p>
+      <p>
+        Los valores almacenados en esta tabla son actualizados continuamente luego de cada interacción 
+        entre el agente y el entorno. Para ello, se emplea una adaptación de la <strong>Ecuación de Bellman</strong> 
+        basada en el método de diferencias temporales:
+      </p>
+      <div class="eq-box">
+        Q(S<sub>t</sub>, A<sub>t</sub>) ← Q(S<sub>t</sub>, A<sub>t</sub>) + α [ R<sub>t+1</sub> + γ max<sub>a</sub> Q(S<sub>t+1</sub>, a) − Q(S<sub>t</sub>, A<sub>t</sub>) ]
+      </div>
+      <p>Cada término de la ecuación cumple un rol específico en el ajuste del conocimiento del agente:</p>
+      <ul>
+        <li><strong>Q(S<sub>t</sub>, A<sub>t</sub>)</strong>: valor estimado actual para el par estado‑acción.</li>
+        <li><strong>Tasa de aprendizaje (α)</strong>: un coeficiente (0 < α ≤ 1) que regula en qué proporción la nueva información adquirida sobrescribe el conocimiento previo. Un α alto hace que el agente aprenda rápidamente, pero puede ser inestable; un α bajo produce un aprendizaje más lento pero más estable.</li>
+        <li><strong>Recompensa (R<sub>t+1</sub>)</strong>: el incentivo o penalización inmediata que entrega el entorno tras ejecutar la acción elegida.</li>
+        <li><strong>Proyección futura (γ max<sub>a</sub> Q(S<sub>t+1</sub>, a))</strong>: el máximo beneficio que el agente estima obtener en el estado siguiente (S<sub>t+1</sub>), asumiendo que tomará la acción óptima (a). Esto se multiplica por el factor de descuento (γ) para ajustar la importancia de las recompensas futuras.</li>
+        <li><strong>Error de Diferencia Temporal (TD Error)</strong>: representado por la expresión completa entre corchetes [R<sub>t+1</sub> + γ max<sub>a</sub> Q(S<sub>t+1</sub>, a) − Q(S<sub>t</sub>, A<sub>t</sub>)]. Cuantifica la discrepancia entre la predicción original y el nuevo valor calculado. Un error TD positivo indica que la acción fue mejor de lo esperado, mientras que uno negativo indica lo contrario.</li>
+      </ul>
+      <p>
+        <strong>Convergencia:</strong> conforme el agente acumula experiencia a través de un número suficiente de iteraciones, 
+        los valores dentro de la Tabla Q convergen progresivamente hacia los valores reales óptimos, siempre que se cumplan 
+        ciertas condiciones (como visitar todos los pares estado‑acción un número infinito de veces). Una vez estabilizados, 
+        el sistema puede prescindir de la exploración y actuar de forma determinista, guiándose exclusivamente por la tabla 
+        para tomar, en cada paso, la decisión que garantice el máximo rendimiento. En la práctica, esto significa que el 
+        agente habrá aprendido la política óptima y podrá utilizarla sin necesidad de seguir explorando.
+      </p>
+      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+    </section>
+
+    <!-- ==================== SLIDE 5: FRAUDES ==================== -->
+    <section class="slide" data-index="4">
+      <h2>5. Caso práctico: Detección de fraudes financieros</h2>
+      <p>
+        En la industria financiera, la detección de transacciones fraudulentas es un desafío constante, 
+        ya que los patrones de fraude evolucionan rápidamente y se ocultan entre millones de operaciones 
+        legítimas. Para ello, el Aprendizaje por Refuerzo ofrece un enfoque altamente adaptativo. 
+        Mediante Q‑Learning, se modela un agente que aprende de manera interactiva a tomar decisiones 
+        de clasificación. A través de la experiencia continua, el agente descubre por sí mismo cómo 
+        identificar comportamientos anómalos y puede, mediante prueba y error, adaptarse a nuevas 
+        tendencias que se desarrollen en el tiempo.
+      </p>
+
+      <h3>5.1 Modelado del problema en componentes de RL</h3>
+      <p>El escenario financiero se traduce en los siguientes componentes:</p>
+      <ul>
+        <li><strong>Entorno:</strong> el flujo continuo de transacciones financieras.</li>
+        <li><strong>Estados (S<sub>t</sub>):</strong> perfil simplificado de la transacción actual, por ejemplo, la combinación de “Monto” (Alto/Bajo) y “Ubicación” (Habitual/Inusual).</li>
+        <li><strong>Acciones (A<sub>t</sub>):</strong> ante cada perfil (estado), el agente ejecuta una de tres decisiones para clasificar la anomalía:
+          <ul>
+            <li><span class="badge green">a₀</span> Aprobar: permitir la transacción (comportamiento normal).</li>
+            <li><span class="badge blue">a₁</span> Alertar: solicitar verificación adicional (anomalía sospechosa).</li>
+            <li><span class="badge red">a₂</span> Bloquear: rechazar la transacción inmediatamente (fraude).</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>5.2 Sistema de recompensas y optimización</h3>
+      <p>
+        En escenarios donde el fraude es poco probable, medir solamente la exactitud puede resultar 
+        engañoso. Por ello, el sistema de recompensas se diseña para penalizar severamente los errores 
+        de seguridad y premiar cuando el agente realiza una detección precisa:
+      </p>
+      <div class="card">
+        <ul>
+          <li><span class="badge green">+1</span> <strong>Verdadero Negativo:</strong> aprobar una transacción legítima (mantiene la fluidez del servicio).</li>
+          <li><span class="badge green">+15</span> <strong>Verdadero Positivo:</strong> bloquear un fraude real (detectar exitosamente la anomalía).</li>
+          <li><span class="badge red">−5</span> <strong>Falso Positivo:</strong> bloquear a un cliente legítimo (penalización debido a la baja gravedad).</li>
+          <li><span class="badge red">−50</span> <strong>Falso Negativo:</strong> aprobar un fraude (penalización crítica por dejar pasar la anomalía y generar pérdida económica).</li>
+        </ul>
+      </div>
+
+      <h3>5.3 Dinámica del aprendizaje</h3>
+      <p>
+        El proceso arranca con una Tabla Q inicializada en ceros. Inicialmente, el agente utiliza una 
+        política ε‑greedy para explorar el entorno de forma aleatoria, probando distintas acciones ante 
+        diferentes perfiles. Si el agente toma una mala decisión (por ejemplo, aprueba un fraude evidente 
+        y recibe la penalización de −50), se genera un gran error en la Ecuación de Actualización de 
+        Bellman, lo que reduce drásticamente el valor de la acción “Aprobar” para ese estado o perfil 
+        específico. Conforme la tasa de exploración disminuye progresivamente, el agente se ve obligado 
+        a explotar su conocimiento acumulado. Al final de las iteraciones, la Tabla Q converge hacia 
+        una política adaptativa robusta: el agente sabrá exactamente qué patrones representan situaciones 
+        anómalas que deben ser bloqueadas y cuáles son transacciones seguras, superando con creces la 
+        rigidez de los sistemas basados en reglas estáticas.
+      </p>
+      <p>
+        <strong>Convergencia:</strong> gracias a la naturaleza off‑policy de Q‑Learning, el agente puede 
+        aprender la política óptima incluso mientras explora, siempre que cada par estado‑acción sea 
+        visitado un número suficiente de veces. La exploración inicial (cold‑start) es fundamental para 
+        descubrir las recompensas asociadas a cada acción, pero debe ser controlada para no provocar 
+        pérdidas excesivas en producción.
+      </p>
+
+      <h3>Tabla Q ilustrativa</h3>
+      <div class="q-table-wrapper">
+        <div class="q-table-fraud">
+          <div class="q-row q-header"><span>Estado</span><span>Aprobar</span><span>Alertar</span><span>Bloquear</span></div>
+          <div class="q-row"><span>Monto Alto · Ubic. Habitual</span><span class="q-cell max">8.2</span><span class="q-cell">3.1</span><span class="q-cell">−1.5</span></div>
+          <div class="q-row"><span>Monto Alto · Ubic. Inusual</span><span class="q-cell">−12.7</span><span class="q-cell max">6.4</span><span class="q-cell">5.8</span></div>
+          <div class="q-row"><span>Monto Bajo · Ubic. Habitual</span><span class="q-cell max">4.5</span><span class="q-cell">1.2</span><span class="q-cell">−0.8</span></div>
+          <div class="q-row"><span>Monto Bajo · Ubic. Inusual</span><span class="q-cell">−2.3</span><span class="q-cell max">3.9</span><span class="q-cell">2.1</span></div>
+        </div>
+      </div>
+
+      <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
+    </section>
+
+    <!-- ==================== SLIDE 6: SIMULACIÓN ==================== -->
+    <section class="slide" data-index="5">
+      <h2>6. Simulación interactiva: Grid World</h2>
+      <p>
+        Para comprender mejor el funcionamiento interno de Q‑Learning, se ha desarrollado una 
+        <strong>simulación interactiva</strong> en un entorno de cuadrícula (Grid World). 
+        El objetivo es que un agente aprenda a moverse por un tablero de 5×5 evitando obstáculos 
+        hasta alcanzar una celda meta (la esquina inferior derecha).
+      </p>
+      <p>
+        <strong>¿Qué hace la simulación?</strong> El agente comienza en la esquina superior izquierda 
+        y, mediante el algoritmo Q‑Learning, va actualizando su Tabla Q a medida que explora el entorno. 
+        En cada paso, el agente elige una acción (arriba, abajo, izquierda o derecha) siguiendo una 
+        política ε‑greedy. Si la acción lo lleva a una celda válida (dentro del tablero y sin obstáculo), 
+        recibe una recompensa: −0.1 por cada paso (para incentivar la rapidez), −1 si intenta moverse 
+        a una celda inválida, y +10 si alcanza la meta. Con estos valores, la Tabla Q se actualiza 
+        aplicando la ecuación de Bellman.
+      </p>
+      <p>
+        <strong>Parámetros ajustables:</strong> el usuario puede modificar en tiempo real la 
+        <em>tasa de aprendizaje (α)</em> (qué tanto influye la nueva información), el 
+        <em>factor de descuento (γ)</em> (visión a corto o largo plazo), la 
+        <em>probabilidad de exploración (ε)</em> (cuánto explora frente a explota) y la 
+        <em>velocidad de reproducción</em> (para observar el proceso paso a paso o más rápido). 
+        Estos controles permiten experimentar con diferentes configuraciones y ver cómo afectan 
+        la convergencia del aprendizaje.
+      </p>
+      <p>
+        <strong>Visualización:</strong> en el canvas se dibuja el tablero con el agente (círculo azul), 
+        la meta (cuadrado amarillo) y los obstáculos (celdas grises). Además, se muestra una mini 
+        Tabla Q donde cada celda presenta el valor máximo de Q para ese estado, permitiendo ver 
+        cómo evoluciona el conocimiento del agente. Las estadísticas (número de episodios, pasos 
+        totales y recompensa acumulada) ofrecen una métrica del rendimiento.
+      </p>
+      <p>
+        <strong>Controles:</strong> los botones “Iniciar/Pausar” y “Reiniciar” permiten controlar 
+        la simulación. Al iniciar, el agente comienza a aprender y reinicia automáticamente al 
+        llegar a la meta, acumulando episodios. Esto demuestra cómo, con el tiempo, el agente 
+        aprende rutas más eficientes.
+      </p>
+
+      <div class="sim-wrapper">
+        <div class="grid-canvas-container">
+          <canvas id="gridCanvas" width="400" height="400"></canvas>
+        </div>
+        <div class="controls">
+          <h3 style="margin-top:0; color:#f0f0f0;">Controles</h3>
+          <label>Tasa aprendizaje (α): <span class="val" id="alphaVal">0.50</span></label>
+          <input type="range" id="alphaSlider" min="0.05" max="1.0" step="0.05" value="0.50" />
+          <label>Factor descuento (γ): <span class="val" id="gammaVal">0.90</span></label>
+          <input type="range" id="gammaSlider" min="0.50" max="0.99" step="0.01" value="0.90" />
+          <label>Exploración (ε): <span class="val" id="epsilonVal">0.20</span></label>
+          <input type="range" id="epsilonSlider" min="0.00" max="0.50" step="0.01" value="0.20" />
+          <label>Velocidad (ms): <span class="val" id="speedVal">200</span></label>
+          <input type="range" id="speedSlider" min="50" max="800" step="10" value="200" />
+
+          <div class="controls-row">
+            <div class="btn-group">
+              <button class="btn btn-success" id="startBtn">Iniciar</button>
+              <button class="btn btn-danger" id="resetBtn">Reiniciar</button>
+            </div>
+            <div class="stats">
+              <div>Episodios: <span id="episodeCount">0</span></div>
+              <div>Pasos: <span id="stepCount">0</span></div>
+              <div>Recompensa: <span id="totalReward">0</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top:0.3rem; font-size:0.75rem; color:#94a3b8;">
+            <span style="display:inline-block; width:12px; height:12px; background:#214E34; border-radius:4px;"></span> Agente · 
+            <span style="display:inline-block; width:12px; height:12px; background:#facc15; border-radius:4px;"></span> Meta · 
+            <span style="display:inline-block; width:12px; height:12px; background:#4a4a4a; border-radius:4px;"></span> Obstáculo
+          </div>
+          <div style="margin-top:0.6rem;">
+            <div style="font-weight:500; font-size:0.75rem; color:#cbd5e1;">Q‑Table (máx. por celda)</div>
+            <div class="q-grid-mini" id="qGridMini"></div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer">Simulación basada en Q‑Learning</div>
+    </section>
+
+    <!-- ==================== SLIDE 7: CONCLUSIONES ==================== -->
+    <section class="slide" data-index="6">
+      <h2>7. Conclusiones y limitaciones</h2>
+      <div class="grid-2">
+        <div>
+          <h3>Conclusiones</h3>
+          <p>
+            El Aprendizaje por Refuerzo supera a los sistemas de reglas estáticas gracias a su 
+            capacidad de adaptación autónoma. En detección de fraudes, Q‑Learning optimiza el balance 
+            entre seguridad y experiencia de usuario mediante un sistema de recompensas bien calibrado.
+          </p>
+        </div>
+        <div>
+          <h3>Limitaciones</h3>
+          <ul>
+            <li><strong>Arranque en frío:</strong> la exploración inicial produce decisiones erróneas; se requiere entrenamiento previo.</li>
+            <li><strong>Maldición de la dimensionalidad:</strong> si el perfil incluye muchas variables, la Tabla Q crece exponencialmente; se necesita <em>Deep RL</em>.</li>
+            <li><strong>Sensibilidad de recompensas:</strong> el comportamiento depende de los valores asignados; una mala calibración puede sesgar la política.</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <h3>Referencias</h3>
+        <p>Sutton, R. S., &amp; Barto, A. G. (2018). <em>Reinforcement Learning: An Introduction</em> (2ª ed.). The MIT Press.</p>
+      </div>
+      <div class="slide-footer">Proyecto Final · ICC608 · David Baez · 2026</div>
+    </section>
+
+  </div>
+</div>
+
+<!-- BOTONES DE NAVEGACIÓN -->
+<button class="nav-btn left" id="prevBtn" aria-label="Anterior">‹</button>
+<button class="nav-btn right" id="nextBtn" aria-label="Siguiente">›</button>
+
+<!-- INDICADORES INFERIORES -->
+<div class="page-indicator" id="pageIndicator"></div>
+
+<!-- ========================================================== -->
+<!-- JAVASCRIPT: Navegación + Simulación Q-Learning             -->
+<!-- ========================================================== -->
+<script>
+  (function() {
+    // ---------- NAVEGACIÓN ----------
+    const slidesContainer = document.getElementById('slidesContainer');
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = 0;
+    let isTransitioning = false;
+
+    const headerLinks = document.querySelectorAll('.header a[data-slide]');
+    const indicator = document.getElementById('slideIndicator');
+    const pageIndicator = document.getElementById('pageIndicator');
+
+    for (let i = 0; i < totalSlides; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'page-dot' + (i === 0 ? ' active' : '');
+      dot.dataset.index = i;
+      dot.addEventListener('click', () => goToSlide(i));
+      pageIndicator.appendChild(dot);
+    }
+    const dots = pageIndicator.querySelectorAll('.page-dot');
+
+    function goToSlide(index) {
+      if (isTransitioning || index === currentSlide || index < 0 || index >= totalSlides) return;
+      isTransitioning = true;
+      currentSlide = index;
+      slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+      headerLinks.forEach(link => {
+        link.classList.toggle('active', parseInt(link.dataset.slide) === currentSlide);
+      });
+      indicator.textContent = `${currentSlide + 1} / ${totalSlides}`;
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+      });
+      setTimeout(() => { isTransitioning = false; }, 500);
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+      else if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+    });
+    headerLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        goToSlide(parseInt(link.dataset.slide));
+      });
+    });
+
+    // ---------- SIMULACIÓN Q-LEARNING ----------
+    const ROWS = 5, COLS = 5;
+    const START = { r: 0, c: 0 };
+    const GOAL = { r: ROWS-1, c: COLS-1 };
+    const OBSTACLES = [{ r: 1, c: 2 }, { r: 2, c: 2 }, { r: 3, c: 2 }];
+    const ACTIONS = [{ dr: -1, dc: 0 }, { dr: 1, dc: 0 }, { dr: 0, dc: -1 }, { dr: 0, dc: 1 }];
+
+    let agent = { r: START.r, c: START.c };
+    let qTable = [];
+    let episode = 0, stepCount = 0, totalReward = 0;
+    let isRunning = false, timerId = null, episodeSteps = 0;
+
+    let alpha = 0.50, gamma = 0.90, epsilon = 0.20, speed = 200;
+
+    const canvas = document.getElementById('gridCanvas');
+    const ctx = canvas.getContext('2d');
+    const qGridMini = document.getElementById('qGridMini');
+    const episodeSpan = document.getElementById('episodeCount');
+    const stepSpan = document.getElementById('stepCount');
+    const rewardSpan = document.getElementById('totalReward');
+
+    const alphaSlider = document.getElementById('alphaSlider');
+    const gammaSlider = document.getElementById('gammaSlider');
+    const epsilonSlider = document.getElementById('epsilonSlider');
+    const speedSlider = document.getElementById('speedSlider');
+    const alphaVal = document.getElementById('alphaVal');
+    const gammaVal = document.getElementById('gammaVal');
+    const epsilonVal = document.getElementById('epsilonVal');
+    const speedVal = document.getElementById('speedVal');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function initQTable() {
+      qTable = [];
+      for (let r = 0; r < ROWS; r++) {
+        qTable[r] = [];
+        for (let c = 0; c < COLS; c++) {
+          qTable[r][c] = Array(ACTIONS.length).fill(0);
+        }
+      }
+    }
+    initQTable();
+
+    function isObstacle(r, c) { return OBSTACLES.some(o => o.r === r && o.c === c); }
+    function isValid(r, c) { return r >= 0 && r < ROWS && c >= 0 && c < COLS && !isObstacle(r, c); }
+    function isGoal(r, c) { return r === GOAL.r && c === GOAL.c; }
+    function resetAgent() { agent.r = START.r; agent.c = START.c; episodeSteps = 0; }
+
+    function chooseAction(r, c) {
+      if (Math.random() < epsilon) {
+        const valid = [];
+        for (let a = 0; a < ACTIONS.length; a++) {
+          const nr = r + ACTIONS[a].dr, nc = c + ACTIONS[a].dc;
+          if (isValid(nr, nc)) valid.push(a);
+        }
+        return valid.length ? valid[Math.floor(Math.random() * valid.length)] : 0;
+      } else {
+        const values = qTable[r][c];
+        let best = 0, bestVal = -Infinity;
+        for (let a = 0; a < values.length; a++) {
+          const nr = r + ACTIONS[a].dr, nc = c + ACTIONS[a].dc;
+          if (isValid(nr, nc) && values[a] > bestVal) {
+            bestVal = values[a];
+            best = a;
+          }
+        }
+        return best;
+      }
+    }
+
+    function step() {
+      if (!isRunning) return;
+      const r = agent.r, c = agent.c;
+      if (isGoal(r, c)) { endEpisode(); return; }
+
+      const action = chooseAction(r, c);
+      const dr = ACTIONS[action].dr, dc = ACTIONS[action].dc;
+      const nr = r + dr, nc = c + dc;
+      let reward = -0.1, nextR = r, nextC = c;
+      if (isValid(nr, nc)) {
+        nextR = nr; nextC = nc;
+        if (isGoal(nextR, nextC)) reward = 10;
+      } else {
+        reward = -1;
+      }
+
+      const oldQ = qTable[r][c][action];
+      let maxNext = 0;
+      if (isValid(nextR, nextC)) maxNext = Math.max(...qTable[nextR][nextC]);
+      const newQ = oldQ + alpha * (reward + gamma * maxNext - oldQ);
+      qTable[r][c][action] = newQ;
+
+      agent.r = nextR; agent.c = nextC;
+      stepCount++; totalReward += reward; episodeSteps++;
+      updateStats();
+
+      if (isGoal(agent.r, agent.c)) { endEpisode(); return; }
+      drawGrid();
+      drawQGridMini();
+      if (isRunning) {
+        clearTimeout(timerId);
+        timerId = setTimeout(step, speed);
+      }
+    }
+
+    function endEpisode() {
+      episode++;
+      resetAgent();
+      updateStats();
+      drawGrid();
+      drawQGridMini();
+      if (isRunning) timerId = setTimeout(step, speed);
+    }
+
+    function drawGrid() {
+      const size = canvas.width / ROWS;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const x = c * size, y = r * size;
+          ctx.fillStyle = '#0f0f0f';
+          ctx.fillRect(x, y, size, size);
+          ctx.strokeStyle = '#2a2a2a';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x, y, size, size);
+          if (isObstacle(r, c)) {
+            ctx.fillStyle = '#3a3a3a';
+            ctx.fillRect(x, y, size, size);
+          }
+          if (isGoal(r, c)) {
+            ctx.fillStyle = '#facc15';
+            ctx.beginPath();
+            ctx.arc(x + size/2, y + size/2, size*0.3, 0, 2*Math.PI);
+            ctx.fill();
+            ctx.fillStyle = '#0f0f0f';
+            ctx.font = `${size*0.5}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('M', x + size/2, y + size/2 + 2);
+          }
+        }
+      }
+      const ax = agent.c * size + size/2, ay = agent.r * size + size/2;
+      ctx.shadowColor = 'rgba(33, 78, 52, 0.4)';
+      ctx.shadowBlur = 12;
+      ctx.fillStyle = '#214E34';
+      ctx.beginPath();
+      ctx.arc(ax, ay, size*0.35, 0, 2*Math.PI);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#f0f0f0';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (isObstacle(r, c) || isGoal(r, c)) continue;
+          const maxQ = Math.max(...qTable[r][c]);
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = `${size*0.2}px monospace`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(maxQ.toFixed(1), c*size + size/2, r*size + size - 4);
+        }
+      }
+    }
+
+    function drawQGridMini() {
+      qGridMini.innerHTML = '';
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'q-grid-cell';
+          if (isObstacle(r, c)) {
+            cell.textContent = 'X';
+            cell.style.background = '#1a1a1a';
+          } else if (isGoal(r, c)) {
+            cell.textContent = 'M';
+            cell.style.background = '#1a2a1a';
+          } else {
+            const maxQ = Math.max(...qTable[r][c]);
+            const intensity = Math.min(1, (maxQ + 5) / 15);
+            const g = Math.round(180 - intensity * 120);
+            const b = Math.round(220 - intensity * 160);
+            cell.style.background = `rgb(20, ${g}, ${b})`;
+            cell.textContent = maxQ.toFixed(1);
+          }
+          qGridMini.appendChild(cell);
+        }
+      }
+    }
+
+    function updateStats() {
+      episodeSpan.textContent = episode;
+      stepSpan.textContent = stepCount;
+      rewardSpan.textContent = totalReward.toFixed(1);
+    }
+
+    function startSimulation() {
+      if (isRunning) {
+        isRunning = false;
+        clearTimeout(timerId);
+        startBtn.textContent = 'Reanudar';
+        return;
+      }
+      isRunning = true;
+      startBtn.textContent = 'Pausar';
+      if (episode === 0) {
+        resetAgent();
+        totalReward = 0; stepCount = 0;
+        updateStats();
+        drawGrid();
+        drawQGridMini();
+      }
+      timerId = setTimeout(step, speed);
+    }
+
+    function resetSimulation() {
+      isRunning = false;
+      clearTimeout(timerId);
+      startBtn.textContent = 'Iniciar';
+      episode = 0; stepCount = 0; totalReward = 0;
+      initQTable();
+      resetAgent();
+      updateStats();
+      drawGrid();
+      drawQGridMini();
+      agent.r = START.r; agent.c = START.c;
+      drawGrid();
+    }
+
+    alphaSlider.addEventListener('input', function() {
+      alpha = parseFloat(this.value);
+      alphaVal.textContent = alpha.toFixed(2);
+    });
+    gammaSlider.addEventListener('input', function() {
+      gamma = parseFloat(this.value);
+      gammaVal.textContent = gamma.toFixed(2);
+    });
+    epsilonSlider.addEventListener('input', function() {
+      epsilon = parseFloat(this.value);
+      epsilonVal.textContent = epsilon.toFixed(2);
+    });
+    speedSlider.addEventListener('input', function() {
+      speed = parseInt(this.value);
+      speedVal.textContent = speed;
+      if (isRunning) {
+        clearTimeout(timerId);
+        timerId = setTimeout(step, speed);
+      }
+    });
+
+    startBtn.addEventListener('click', startSimulation);
+    resetBtn.addEventListener('click', resetSimulation);
+
+    resetAgent();
+    drawGrid();
+    drawQGridMini();
+    updateStats();
+    alphaVal.textContent = alpha.toFixed(2);
+    gammaVal.textContent = gamma.toFixed(2);
+    epsilonVal.textContent = epsilon.toFixed(2);
+    speedVal.textContent = speed;
+
+    goToSlide(0);
+  })();
+</script>
+</body>
+</html>
