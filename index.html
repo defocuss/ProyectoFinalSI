@@ -73,8 +73,11 @@
 
       <section class="slide" data-index="2">
         <h2>3. Proceso de aprendizaje mediante recompensas</h2>
+
         <p>El proceso de aprendizaje se basa en la interacción continua entre el agente y su entorno. En cada instante <em>t</em>, el agente observa su estado actual (S<sub>t</sub>) y ejecuta una acción (A<sub>t</sub>). Como respuesta, el entorno transita a un nuevo estado (S<sub>t+1</sub>) y emite una recompensa o penalización (R<sub>t+1</sub>). Al carecer de instrucciones explícitas sobre qué acciones son correctas, el agente aprende mediante <strong>ensayo y error</strong>, ajustando su comportamiento para favorecer las decisiones que resultan rentables a largo plazo.</p>
+
         <p>Este proceso iterativo permite al agente construir gradualmente una <strong>política</strong> que maximiza la señal de recompensa. La clave está en que el agente no solo considera el beneficio inmediato, sino que también evalúa las consecuencias futuras de sus acciones, lo que le permite planificar y adaptarse a entornos dinámicos.</p>
+
         <div class="card">
           <h3>Dilema entre exploración y explotación</h3>
           <p>Para optimizar el aprendizaje, el sistema debe resolver un equilibrio fundamental:</p>
@@ -84,10 +87,19 @@
           </ul>
           <p>Este equilibrio se gestiona habitualmente con la estrategia <span class="highlight">ε‑greedy</span>, donde el agente explora al azar con una probabilidad ε y explota su conocimiento con probabilidad 1−ε. Conforme el agente va adquiriendo experiencia, la tasa de exploración ε se reduce gradualmente, permitiendo que el agente se centre en explotar el conocimiento ya adquirido.</p>
         </div>
+
+        <div class="diagram-box">
+          <img src="images/diagrama_refuerzo_extendido.png" alt="Diagrama extendido del proceso de aprendizaje por refuerzo" />
+        </div>
+
         <p>El objetivo final del agente no es maximizar la recompensa inmediata, sino el <strong>retorno acumulado descontado</strong> a lo largo del tiempo, definido como:</p>
+
         <div class="eq-box">G<sub>t</sub> = ∑<sub>k=0</sub><sup>∞</sup> γ<sup>k</sup> R<sub>t+k+1</sub></div>
+
         <p>Donde el <span class="highlight">factor de descuento γ</span> (0 ≤ γ < 1) es un parámetro clave que define la “visión futura” del sistema. Un valor de γ cercano a 1 otorga un peso casi igual a las recompensas futuras, lo que permite al agente planificar a largo plazo y tomar decisiones que maximicen el beneficio total. Por el contrario, un γ cercano a 0 hace que el agente sea <strong>cortoplacista</strong>, enfocándose únicamente en la recompensa inmediata (R<sub>t+1</sub>) y descartando prácticamente las consecuencias futuras de sus acciones.</p>
-        <p>La elección de γ depende del problema: en tareas donde el agente necesita actuar con previsión (por ejemplo, gestión de inventarios o planificación financiera), se prefiere un γ alto. En problemas donde las acciones tienen efectos inmediatos y el entorno cambia rápidamente, un γ bajo puede ser más adecuado para evitar planes excesivamente largos que se vuelvan obsoletos.</p>
+
+        <p>La elección de γ depende del problema: en tareas donde el agente necesita actuar con previsión (por ejemplo, gestión de inventarios o planificación financiera), se prefiere un γ alto. En problemas donde las acciones tienen efectos inmediatos y el entorno cambia rápidamente, un γ bajo puede ser más adecuado para evitar plans excesivamente largos que se vuelvan obsoletos.</p>
+
         <div class="slide-footer">Referencia: Sutton &amp; Barto (2018)</div>
       </section>
 
