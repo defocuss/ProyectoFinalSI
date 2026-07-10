@@ -24,15 +24,19 @@
     isTransitioning = true;
     currentSlide = index;
     slidesContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+    slides.forEach(s => s.classList.remove('visible'));
+    slides[currentSlide].classList.add('visible');
+
     headerLinks.forEach(link => {
-      link.classList.toggle('active', parseInt(link.dataset.slide) === currentSlide);
+        link.classList.toggle('active', parseInt(link.dataset.slide) === currentSlide);
     });
     indicator.textContent = `${currentSlide + 1} / ${totalSlides}`;
     dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentSlide);
+        dot.classList.toggle('active', i === currentSlide);
     });
     setTimeout(() => { isTransitioning = false; }, 500);
-  }
+}
 
   document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
   document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
@@ -375,4 +379,5 @@
   speedVal.textContent = speed;
 
   goToSlide(0);
+  slides[0].classList.add('visible');
 })();

@@ -170,3 +170,48 @@ html, body {
   .slide .grid-2 { grid-template-columns: 1fr; }
   .header a { font-size: 0.7rem; padding: 0.2rem 0.5rem; }
 }
+
+.slide {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.slide.visible {
+  opacity: 1;
+}
+
+.slide.visible h2,
+.slide.visible h3,
+.slide.visible p,
+.slide.visible ul,
+.slide.visible ol,
+.slide.visible .card,
+.slide.visible .diagram-box,
+.slide.visible .eq-box,
+.slide.visible .slide-footer,
+.slide.visible .sim-wrapper {
+  animation: slideFadeIn 0.5s ease forwards;
+  opacity: 0;
+}
+
+.slide.visible h2 { animation-delay: 0.05s; }
+.slide.visible h3 { animation-delay: 0.10s; }
+.slide.visible p  { animation-delay: 0.15s; }
+.slide.visible ul,
+.slide.visible ol { animation-delay: 0.20s; }
+.slide.visible .card { animation-delay: 0.25s; }
+.slide.visible .diagram-box { animation-delay: 0.30s; }
+.slide.visible .eq-box { animation-delay: 0.35s; }
+.slide.visible .slide-footer { animation-delay: 0.40s; }
+.slide.visible .sim-wrapper { animation-delay: 0.20s; }
+
+@keyframes slideFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
